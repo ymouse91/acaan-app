@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const mnemonica = [
   "4C", "2H", "7D", "3C", "4H", "6D", "AS", "5H", "9S", "2S",
@@ -14,6 +14,16 @@ export default function ACAANApp() {
   const [numberRange, setNumberRange] = useState(null);
   const [instructions, setInstructions] = useState({});
   const [revealInstructions, setRevealInstructions] = useState(false);
+
+  const cardInputRef = useRef(null);
+
+  useEffect(() => {
+    if (cardInputRef.current) {
+      cardInputRef.current.focus();
+    }
+  }, []);
+
+  
 
   const getCardPosition = (card) => mnemonica.indexOf(card) + 1;
 
@@ -70,6 +80,7 @@ export default function ACAANApp() {
     setInstructions(instr);
   };
 
+  
   return (
     <>
       {typeof window !== 'undefined' && /Mobi|Android/i.test(navigator.userAgent) && Object.keys(instructions).length > 0 && (
@@ -94,10 +105,11 @@ export default function ACAANApp() {
           left: 0,
           width: "100vw",
           height: "100vh",
-          backgroundImage: "url(/img/IMG_3130.PNG)",
+          backgroundImage: `url(${process.env.PUBLIC_URL}/img/IMG_3130.PNG)`,
           backgroundSize: "contain",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
+          
           zIndex: -1,
         }}
       ></div>
@@ -115,11 +127,13 @@ export default function ACAANApp() {
             style={{
               padding: 20,
               borderRadius: 12,
-              backgroundColor: "rgba(255, 255, 255, 0.6)",
+              backgroundColor: "transparent",
             }}
           >
-            <div style={{ marginTop: 20 }}>
+            <div style={{ fontSize: '0.9rem', color: 'gray', textAlign: 'center' }}>{new Date().toLocaleString(undefined, { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
+            <div style={{ marginTop: 10 }}>
               <input
+                ref={cardInputRef}
                 id="card-input"
                 tabIndex={0}
                 onFocus={() => {
@@ -131,12 +145,16 @@ export default function ACAANApp() {
                 onKeyDown={(e) => {
                   if (["Enter", "Tab"].includes(e.key)) {
                     let value = e.currentTarget.value.toUpperCase().trim();
-                    const emojiToSuit = { "♠️": "S", "♥️": "H", "♦️": "D", "♣️": "C" };
-                    Object.entries(emojiToSuit).forEach(([emoji, letter]) => {
-                      if (value.includes(emoji)) {
-                        value = value.replace(emoji, letter);
-                      }
-                    });
+// Korvaa saksalaiset nimitykset
+value = value.replace(/^B/, 'J').replace(/B$/, 'J');
+const emojiToSuit = { "♠️": "S", "♥️": "H", "♦️": "D", "♣️": "C" };
+Object.entries(emojiToSuit).forEach(([emoji, letter]) => {
+  if (value.startsWith(emoji)) {
+    value = value.replace(emoji, '') + letter;
+  } else if (value.endsWith(emoji)) {
+    value = value.replace(emoji, letter);
+  }
+});
                     if (mnemonica.includes(value)) {
                       handleCardSelection(value);
                       setTimeout(() => {
@@ -207,6 +225,7 @@ export default function ACAANApp() {
           </div>
         </div>
       </div>
+      
     </>
   );
 }
