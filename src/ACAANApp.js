@@ -23,8 +23,6 @@ export default function ACAANApp() {
     }
   }, []);
 
-  
-
   const getCardPosition = (card) => mnemonica.indexOf(card) + 1;
 
   const getValidRange = (pos) => {
@@ -68,7 +66,33 @@ export default function ACAANApp() {
   };
 
   const handleNumberSubmit = (value) => {
-    if (!cardPosition) return;
+
+	if (!value || value.trim() === "") return;
+	let pos = cardPosition;
+    if (!pos && cardInputRef.current) {
+      let card = cardInputRef.current.value.toUpperCase().trim();
+      card = card.replace(/^B/, 'J').replace(/B$/, 'J');
+      const emojiToSuit = { "♠️": "S", "♥️": "H", "♦️": "D", "♣️": "C" };
+      Object.entries(emojiToSuit).forEach(([emoji, letter]) => {
+        if (card.startsWith(emoji)) {
+          card = card.replace(emoji, '') + letter;
+        } else if (card.endsWith(emoji)) {
+          card = card.replace(emoji, letter);
+        }
+      });
+      if (mnemonica.includes(card)) {
+        pos = mnemonica.indexOf(card) + 1;
+        setCardPosition(pos);
+        const range = getValidRange(pos);
+        setNumberRange(range);
+      } else {
+        alert("Card not found in Mnemonica stack.");
+        return;
+      }
+    }
+
+    if (!pos || !numberRange) return;
+
     const [min, max] = numberRange;
     const inputValue = value.trim();
     const n = parseInt(inputValue);
@@ -76,11 +100,10 @@ export default function ACAANApp() {
       alert(`Please enter a number between ${min} and ${max}.`);
       return;
     }
-    const instr = getDealingInstructions(cardPosition, inputValue);
+    const instr = getDealingInstructions(pos, inputValue);
     setInstructions(instr);
   };
 
-  
   return (
     <>
       {typeof window !== 'undefined' && /Mobi|Android/i.test(navigator.userAgent) && Object.keys(instructions).length > 0 && (
@@ -109,7 +132,6 @@ export default function ACAANApp() {
           backgroundSize: "contain",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
-          
           zIndex: -1,
         }}
       ></div>
@@ -130,7 +152,15 @@ export default function ACAANApp() {
               backgroundColor: "transparent",
             }}
           >
-            <div style={{ fontSize: '0.9rem', color: 'gray', textAlign: 'center' }}>{new Date().toLocaleString(undefined, { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
+            <div style={{ fontSize: '0.9rem', color: 'gray', textAlign: 'center' }}>
+              {new Date().toLocaleString(undefined, {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              })}
+            </div>
             <div style={{ marginTop: 10 }}>
               <input
                 ref={cardInputRef}
@@ -145,16 +175,15 @@ export default function ACAANApp() {
                 onKeyDown={(e) => {
                   if (["Enter", "Tab"].includes(e.key)) {
                     let value = e.currentTarget.value.toUpperCase().trim();
-// Korvaa saksalaiset nimitykset
-value = value.replace(/^B/, 'J').replace(/B$/, 'J');
-const emojiToSuit = { "♠️": "S", "♥️": "H", "♦️": "D", "♣️": "C" };
-Object.entries(emojiToSuit).forEach(([emoji, letter]) => {
-  if (value.startsWith(emoji)) {
-    value = value.replace(emoji, '') + letter;
-  } else if (value.endsWith(emoji)) {
-    value = value.replace(emoji, letter);
-  }
-});
+                    value = value.replace(/^B/, 'J').replace(/B$/, 'J');
+                    const emojiToSuit = { "♠️": "S", "♥️": "H", "♦️": "D", "♣️": "C" };
+                    Object.entries(emojiToSuit).forEach(([emoji, letter]) => {
+                      if (value.startsWith(emoji)) {
+                        value = value.replace(emoji, '') + letter;
+                      } else if (value.endsWith(emoji)) {
+                        value = value.replace(emoji, letter);
+                      }
+                    });
                     if (mnemonica.includes(value)) {
                       handleCardSelection(value);
                       setTimeout(() => {
@@ -181,7 +210,7 @@ Object.entries(emojiToSuit).forEach(([emoji, letter]) => {
 
             {numberRange && (
               <>
-                <div style={{ marginTop: 20 }}>
+                <div style={{ marginTop: 2 }}>
                   <input
                     id="number-input"
                     tabIndex={0}
@@ -193,6 +222,9 @@ Object.entries(emojiToSuit).forEach(([emoji, letter]) => {
                       if (["Enter", "Tab"].includes(e.key)) {
                         handleNumberSubmit(e.currentTarget.value);
                       }
+                    }}
+                    onBlur={(e) => {
+                      handleNumberSubmit(e.currentTarget.value);
                     }}
                     style={{
                       width: "80%",
@@ -225,7 +257,6 @@ Object.entries(emojiToSuit).forEach(([emoji, letter]) => {
           </div>
         </div>
       </div>
-      
     </>
   );
 }
