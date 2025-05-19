@@ -1,3 +1,111 @@
+✅ Yhteenveto
+
+Tämä sovellus on suunniteltu taikureille ACAAN-tempun suorittamiseen Mnemonica-pinolla. Se laskee automaattisesti tarvittavat jako-ohjeet ja tarjoaa mahdollisuuden mobiilipiilotukseen, jotta ohjeet saa esiin vain kun taikuri haluaa.
+
+🔍 Ohjelman tarkoitus
+
+Auttaa taikuria toteuttamaan ACAAN-tempun käyttämällä Mnemonica-järjestystä, laskemalla automaattisesti:
+
+    Valitun kortin sijainnin Mnemonica-pinossa
+
+    Sallitun numerovalikoiman (niin että temppu voidaan suorittaa)
+
+    Tarkan toimintasuunnitelman (kumpi puolisko pakkaa, kuinka monta korttia jaeta ennen ja jälkeen käännön)
+
+🧠 Ohjelman keskeinen logiikka
+
+    Mnemonica-pino (52 kortin järjestys) on kovakoodattu mnemonica-taulukkoon.
+
+    Käyttäjä kirjoittaa kortin (esim. 4C tai ♣️4), jolloin:
+
+        Kortin sijainti Mnemonica-pinossa lasketaan.
+
+        Sen perusteella määritetään sallitut numerot, joita temppu voi käyttää.
+
+    Käyttäjä syöttää numeron (esim. 17), jolloin:
+
+        Ohjelma laskee tarvittavat jako-ohjeet:
+
+            Kumpi puoli pakasta aloitetaan (Side 1 vai Side 2)
+
+            Kuinka monta korttia jaetaan ennen kääntöä
+
+            Tarvitaanko kääntö
+
+            Kuinka monta korttia käännön jälkeen
+
+    Ohjeet näytetään selkeästi (väritetty neliö ja tekstit)
+
+🧰 Keskeiset komponentit ja toiminnot
+Osio	Tarkoitus
+cardInputRef	Viittaa ensimmäiseen input-kenttään (kortin syöttö)
+getCardPosition(card)	Palauttaa kortin sijainnin Mnemonica-pinossa (1–52)
+getValidRange(pos)	Määrittää numerovälin, johon temppu voidaan suorittaa (jotta jako on mahdollinen)
+getDealingInstructions(pos, number)	Palauttaa toimintaohjeet: kumpi puoli aloittaa, jaot, käännöt
+handleCardSelection(card)	Päivittää kortin sijainnin ja sallitun numerovälin
+handleNumberSubmit(value)	Vahvistaa numeron ja laskee ohjeet, jos kaikki kelvollista
+📱 Mobiilikäyttö
+
+    Jos käyttäjä on mobiilissa, näytön alareunassa oleva läpinäkyvä alue toimii napina: se paljastaa tai piilottaa ohjeet.
+
+    Tämä on tehty estämään ohjeiden näkyminen ennen aikojaan esitystilanteessa.
+
+💡 Esimerkki
+
+Jos käyttäjä syöttää:
+
+    Kortti: AS (ässa pata) – joka on sijalla 7 Mnemonica-pinossa
+
+    Numero: 10
+
+Sovellus laskee:
+
+    Side 2 aloitus
+
+    Deal 3, flip, sitten deal 7
+
+    Näytetään: 🔲 musta laatikko ja teksti “– 3 – 7”
+
+🖼️ Visuaaliset yksityiskohdat
+
+    Taustakuvana on IMG_3130.PNG, jonka oletetaan olevan taikatemppuun liittyvä kuva.
+
+    Käyttöliittymä on minimalistinen, jotta se toimii lavalla tai puhelimella ilman turhaa hälinää.
+
+
+
+## 🇬🇧 Description (English)
+
+**ACAANApp** is an interactive tool designed for magicians to help perform the **Any Card At Any Number (ACAAN)** routine using the **Mnemonica stack**.
+
+The user inputs a selected card and a number, and the app automatically calculates:
+- the card's position in the Mnemonica stack
+- the valid range of numbers for the trick to work
+- exact dealing instructions: which side to start from, how many cards to deal, whether to flip the packet
+
+The app includes mobile-specific features such as tap-to-reveal instructions, making it discreet and usable during live performances.
+
+### 🔧 Technical Info
+- Built with **React** (function component)
+- Mnemonica stack is hardcoded in the `mnemonica` array
+- Uses `useRef`, `useState`, and `useEffect` hooks
+- Background image: `public/img/IMG_3130.PNG`
+
+### 📱 Mobile Usage
+On mobile, tap the lower-left corner of the screen to toggle instructions visibility.
+
+---
+
+## 🔗 Käyttöönotto / Getting Started
+
+1. Aseta taustakuva `public/img/IMG_3130.PNG` hakemistoon
+2. Lisää komponentti React-sovellukseesi tai suorita itsenäisesti
+3. Käynnistä sovellus tavalliseen tapaan:
+```bash
+npm install
+npm start
+
+-------
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
