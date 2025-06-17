@@ -94,9 +94,9 @@ const normalizeCardInput = (value) => {
 export default function ACAANApp() {
   //const [selectedStackName, setSelectedStackName] = useState(null);
   const [selectedStackName, setSelectedStackName] = useState("Mnemonica");
-  //const [deck, setDeck] = useState(stacks["Mnemonica"]);
+  const [deck, setDeck] = useState(stacks["Mnemonica"]);
   // yllä oletukseksi määritelty ilman valikkoa Mnemonica
-  const [deck, setDeck] = useState([]);
+  //const [deck, setDeck] = useState([]);
   const [cardPosition, setCardPosition] = useState(null);
   const [numberRange, setNumberRange] = useState(null);
   const [instructions, setInstructions] = useState({});
